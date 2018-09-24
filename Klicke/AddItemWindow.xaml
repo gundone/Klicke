@@ -1,0 +1,266 @@
+﻿<Window x:Class="Klicke.AddItemWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Klicke"
+        mc:Ignorable="d"
+        Title="Add"
+        Height="502"
+        Width="519"
+        Name="AddAction"
+        Closing="AddAction_Closing">
+    <Grid Name="Bg"
+          Background="{DynamicResource ResourceKey=Brush05}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="95*" />
+            <ColumnDefinition Width="52*" />
+        </Grid.ColumnDefinitions>
+        <TabControl x:Name="TabControl"
+                    Background="#FF333333"
+                    BorderBrush="#FF565656"
+                    Grid.Column="0"
+                    TabStripPlacement="Left"
+                    Margin="10"
+                    SelectionChanged="TabControl_OnSelectionChanged"
+                    Grid.ColumnSpan="2">
+            <TabItem Header="MouseAction"
+                     x:Name="MouseTab">
+                <Grid Name="MouseActionGrid"
+                      Background="{DynamicResource ResourceKey=Brush05}">
+                    <Label Content="MouseAction" />
+                    <TextBox x:Name="TextBoxX"
+                             Height="23"
+                             TextWrapping="Wrap"
+                             Text="0"
+                             Width="75"
+                             Margin="10,30,0,0"
+                             VerticalAlignment="Top"
+                             HorizontalAlignment="Left" />
+                    <TextBox x:Name="TextBoxY"
+                             Height="23"
+                             TextWrapping="Wrap"
+                             Text="0"
+                             Width="75"
+                             Margin="90,30,133,0"
+                             VerticalAlignment="Top" />
+                    <TextBox x:Name="TextBoxWheel"
+                             Height="23"
+                             TextWrapping="Wrap"
+                             Text="0"
+                             Width="75"
+                             HorizontalAlignment="Right"
+                             Margin="0,30,54,0"
+                             VerticalAlignment="Top" />
+                    <!--<ListBox x:Name="listBox1"
+                             Margin="10,65,0,0"
+                             Height="107"
+                             VerticalAlignment="Top">
+                        <ListBoxItem Content="Left" />
+                        <ListBoxItem Content="Right" />
+                        <ListBoxItem Content="Middle" />
+                    </ListBox> -->
+                </Grid>
+            </TabItem>
+            <TabItem Header="KeyboardAction"
+                     x:Name="KeyboardTab">
+                <Grid Name="KeyboardActionGrid"
+                      Background="{DynamicResource ResourceKey=Brush05}">
+                    <Label Content="KeyboardAction" />
+                    <TextBox x:Name="keyBoardBox"
+                             TextWrapping="Wrap"
+                             Text=""
+                             Margin="10,30,10,10" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="SetKbdLayout"
+                     x:Name="SetKbdLayout">
+                <Grid Background="{DynamicResource ResourceKey=Brush05}">
+                    <Label Content="Layout:" />
+                    <ListBox x:Name="KbdLayout"
+                             HorizontalAlignment="Left"
+                             Height="80"
+                             VerticalAlignment="Top"
+                             Width="90"
+                             Margin="10,32,0,0">
+                        <ListBoxItem Content="En" />
+                        <ListBoxItem Content="Ru"
+                                     IsSelected="True" />
+                    </ListBox>
+
+                    <Button Content="Ok"
+                            Height="35"
+                            Margin="10,152,0,0"
+                            VerticalAlignment="Top"
+                            Click="SetKbdLayoutBtnClick"
+                            d:LayoutOverrides="VerticalAlignment"
+                            HorizontalAlignment="Left"
+                            Width="90" />
+                </Grid>
+
+            </TabItem>
+            <TabItem Header="WaitForWindow"
+                     x:Name="WaitForWindowTab">
+                <Grid Name="WaitForWindowGrid"
+                      Background="{DynamicResource ResourceKey=Brush05}">
+                    <Label Content="WaitForWindow" />
+                    <TextBox x:Name="textBoxWndClass"
+                             Height="23"
+                             Margin="10,40,10,0"
+                             TextWrapping="Wrap"
+                             Text="wndClass"
+                             VerticalAlignment="Top" />
+                    <TextBox x:Name="textBoxWndTitle"
+                             Height="23"
+                             Margin="10,75,10,0"
+                             TextWrapping="Wrap"
+                             Text="wndTitle"
+                             VerticalAlignment="Top"
+                             d:LayoutOverrides="Width, LeftMargin, RightMargin" />
+                    <CheckBox Content="Maximize"
+                              x:Name="MaximizeWndCheckBox"
+                              Margin="10,130,0,0"
+                              Height="22"
+                              HorizontalAlignment="Left"
+                              Width="102"
+                              VerticalAlignment="Top" />
+                    <CheckBox Content="Close"
+                              x:Name="CloseWndCheckBox"
+                              Margin="10,160,0,0"
+                              Height="22"
+                              HorizontalAlignment="Left"
+                              Width="102"
+                              VerticalAlignment="Top" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="LocateText"
+                     x:Name="LocateTextTab">
+                <Grid Name="LocateTextGrid"
+                      Background="{DynamicResource ResourceKey=Brush05}">
+                    <Label Content="LocateText"
+                           Height="30"
+                           VerticalAlignment="Top" />
+                    <TextBox x:Name="locateText"
+                             TextWrapping="Wrap"
+                             Text=""
+                             Margin="10,30,10,0"
+                             Height="92"
+                             VerticalAlignment="Top" />
+                    <Label Content="Lang"
+                           Margin="10,152,0,0"
+                           HorizontalAlignment="Left"
+                           Width="42"
+                           Height="30"
+                           VerticalAlignment="Top" />
+                    <TextBox x:Name="LangTextBox"
+                             TextWrapping="Wrap"
+                             Text="rus"
+                             TextAlignment="Right"
+                             Margin="0,152,10,0"
+                             HorizontalAlignment="Right"
+                             Width="103"
+                             Height="30"
+                             VerticalAlignment="Top" />
+                    <Label Content="MinHeight"
+                           Margin="10,195,118,143"
+                           Height="30"
+                           VerticalAlignment="Top" />
+                    <TextBox x:Name="MinHeightTextBox"
+                             TextWrapping="Wrap"
+                             Text="7"
+                             TextAlignment="Right"
+                             Margin="0,195,10,143"
+                             Height="30"
+                             VerticalAlignment="Top"
+                             HorizontalAlignment="Right"
+                             Width="103" />
+                    <Label Content="MaxHeight"
+                           Margin="10,238,118,103"
+                           Height="30"
+                           VerticalAlignment="Top" />
+                    <TextBox x:Name="MaxHeightTextBox"
+                             TextWrapping="Wrap"
+                             Text="30"
+                             TextAlignment="Right"
+                             Margin="0,238,10,103"
+                             Height="30"
+                             VerticalAlignment="Top"
+                             HorizontalAlignment="Right"
+                             Width="103"
+                             RenderTransformOrigin="-0.097,0.5" />
+                    <Label Content="MinWidth"
+                           Margin="10,281,118,63"
+                           Height="30"
+                           VerticalAlignment="Top" />
+                    <TextBox x:Name="MinWidthTextBox"
+                             TextWrapping="Wrap"
+                             Text="40"
+                             TextAlignment="Right"
+                             Margin="0,281,10,63"
+                             Height="30"
+                             VerticalAlignment="Top"
+                             HorizontalAlignment="Right"
+                             Width="103" />
+                    <Button Content="Ok"
+                            Width="100"
+                            Height="22"
+                            Margin="92,330,88,10"
+                            Click="AddLocateTextAction" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="OpenProgram"
+                     x:Name="OpenProgramTab">
+                <Grid Name="OpenProgramGrid"
+                      Background="{DynamicResource ResourceKey=Brush05}">
+                    <Label Content="Path" />
+                    <TextBox x:Name="ProgramPath"
+                             TextWrapping="Wrap"
+                             Text=""
+                             Margin="10,30,10,0"
+                             Height="32"
+                             VerticalAlignment="Top"
+                             MouseDoubleClick="OpenFileDialog" />
+                    <Label Margin="0,67,0,0"
+                           Content="Args"
+                           Height="28"
+                           VerticalAlignment="Top" />
+                    <TextBox x:Name="ProgramAgrs"
+                             TextWrapping="Wrap"
+                             Text=""
+                             Margin="10,95,10,0"
+                             Height="32"
+                             VerticalAlignment="Top" />
+                    <Button Content="Ok"
+                            Width="100"
+                            Height="22"
+                            Margin="90,160,90,0"
+                            VerticalAlignment="Top"
+                            Click="OpenProgramAddAction" />
+                </Grid>
+
+            </TabItem>
+            <TabItem Header="Sleep"
+                     x:Name="SleepTab">
+                <Grid Background="{DynamicResource ResourceKey=Brush05}">
+                    <Label Content="Miliseconds:" />
+                    <TextBox x:Name="SleepTime"
+                             TextWrapping="Wrap"
+                             Text=""
+                             Margin="10,30,10,0"
+                             Height="32"
+                             VerticalAlignment="Top"
+                             TextAlignment="Right" />
+
+                    <Button Content="Ok"
+                            Width="100"
+                            Height="22"
+                            Margin="90,67,98,0"
+                            VerticalAlignment="Top"
+                            Click="SleepAddAction"
+                            d:LayoutOverrides="VerticalAlignment" />
+                </Grid>
+
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
