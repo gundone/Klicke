@@ -59,15 +59,5 @@ namespace Klicke.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] cur1 {
-            get {
-                object obj = ResourceManager.GetObject("cur1", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

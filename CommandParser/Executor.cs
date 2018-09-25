@@ -157,9 +157,13 @@ namespace CommandProcessor
 			var command   = Command.Parse((string)args[0]);
 			var lang      = command.Attr["Lang"];
 			var culture   = CultureInfo.CreateSpecificCulture(lang);
-			var k1        = KeyboardLayout.GetCurrent();
-			var k2 = KeyboardLayout.Load(culture);
-			if (k1 == k2) return;
+			//var k1 = System.Globalization.Language.CurrentInputMethodLanguageTag;
+			var topUserLanguage = InputLanguage.CurrentInputLanguage;
+			
+			var needLanguage = InputLanguage.FromCulture(culture);
+			InputLanguage.CurrentInputLanguage = needLanguage;
+			
+			//if (topUserLanguage.Handle == needLanguage?.Handle) return;
 			Keyboard.KeyDown(Keys.LMenu);
 			Keyboard.KeyDown(Keys.LShiftKey);
 			Keyboard.KeyUp(Keys.LShiftKey);

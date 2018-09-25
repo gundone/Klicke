@@ -1,0 +1,33 @@
+﻿<Window x:Class="Klicke.OptionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Klicke"
+        mc:Ignorable="d"
+        Title="Options"
+        Height="312"
+        Width="404"
+        ResizeMode="NoResize"
+        Closing="Window_Closing">
+    <Grid Background="{DynamicResource ResourceKey=Brush05}">
+        <CheckBox x:Name="AddActionsToCursor"
+                  Content="Add actions before the cursor position"
+                  HorizontalAlignment="Left"
+                  Margin="10,10,0,0"
+                  VerticalAlignment="Top"
+                  Width="291"
+                  Height="30" 
+                  Checked="OnAddActionsCheckboxSettingChanged"
+                  Click="OnAddActionsCheckboxSettingChanged" />
+        <CheckBox x:Name="OpenLastScript"
+                  Content="Open Last Script Automaticaly"
+                  HorizontalAlignment="Left"
+                  Margin="10,40,0,0"
+                  VerticalAlignment="Top"
+                  Width="291"
+                  Height="30" 
+                  Checked="OpenLastScriptChecked"
+                  Click="OpenLastScriptChecked" />
+    </Grid>
+</Window>

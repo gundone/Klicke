@@ -73,7 +73,7 @@ namespace InputSimulator
 
 		public static KeyboardLayout GetCurrent()
 		{
-			uint hkl = GetKeyboardLayout((uint)Thread.CurrentThread.ManagedThreadId);
+			uint hkl = GetKeyboardLayout(0);
 			return new KeyboardLayout(hkl);
 		}
 

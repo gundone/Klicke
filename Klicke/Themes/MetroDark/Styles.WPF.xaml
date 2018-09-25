@@ -937,14 +937,14 @@
     </Setter>
   </Style>
     
-  <Style x:Key="{x:Type MenuItem}" TargetType="{x:Type MenuItem}">
+  <!--<Style x:Key="{x:Type MenuItem}" TargetType="{x:Type MenuItem}">
       <Setter Property="FontFamily" Value="Segoe UI"/>
       <Setter Property="Background" Value="{StaticResource Brush05}" />
       <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
       <Setter Property="BorderBrush" Value="{StaticResource Brush05}" />
-      <Setter Property="Margin" Value="0" />
+      <Setter Property="Margin" Value="-2" />
       <Setter Property="Padding" Value="6" />
-      <Setter Property="SnapsToDevicePixels" Value="True" />
+      <Setter Property="SnapsToDevicePixels" Value="False" />
       <Setter Property="Template">
           <Setter.Value>
               <ControlTemplate TargetType="{x:Type MenuItem}">
@@ -979,5 +979,192 @@
                       Value="{StaticResource {x:Static MenuItem.SubmenuItemTemplateKey}}" />
           </Trigger>
       </Style.Triggers>
+  </Style>-->
+    <Style x:Key="{x:Type MenuItem}" TargetType="{x:Type MenuItem}">
+    <Setter Property="FontFamily" Value="Segoe UI"/>
+    <Setter Property="Background" Value="{StaticResource Brush05}" />
+    <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource Brush05}" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Padding" Value="4,9,4,9" />
+    <Setter Property="SnapsToDevicePixels" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type MenuItem}">
+          <Border x:Name="Border"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="1">
+         
+            
+
+              <!-- The Popup is the body of the menu which expands down or across depending on the level of the item -->
+              <Popup IsOpen="{Binding Path=IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" Placement="Right" x:Name="SubMenuPopup" Focusable="false" PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
+                  <Border x:Name="SubMenuBorder" BorderBrush="{StaticResource Brush05}" BorderThickness="1" Padding="0">
+                      <Grid x:Name="SubMenu" Grid.IsSharedSizeScope="True">
+                          <!-- StackPanel holds children of the menu. This is set by IsItemsHost=True -->
+                          <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                      </Grid>
+                  </Border>
+              </Popup>
+          </Border>
+
+          <!-- These triggers re-configure the four arrangements of MenuItem to show different levels of menu via Role -->
+         
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+        <Style.Triggers>
+            <Trigger Property="Role" Value="TopLevelHeader">
+                <Setter Property="Template" Value="{StaticResource {x:Static MenuItem.TopLevelHeaderTemplateKey}}" />
+                <Setter Property="Grid.IsSharedSizeScope"
+                        Value="false" />
+                <Setter Property="Background" Value="{StaticResource Brush05}" />
+            </Trigger>
+            <Trigger Property="Role"
+                     Value="TopLevelItem">
+                <Setter Property="Template"
+                        Value="{StaticResource {x:Static MenuItem.TopLevelItemTemplateKey}}" />
+                <Setter Property="Background" Value="{StaticResource Brush05}" />
+            </Trigger>
+            <Trigger Property="Role"
+                     Value="SubmenuHeader">
+                <Setter Property="Template"
+                        Value="{StaticResource {x:Static MenuItem.SubmenuHeaderTemplateKey}}" />
+                <Setter Property="Background" Value="{StaticResource Brush05}" />
+            </Trigger>
+            <Trigger Property="Role"
+                     Value="SubmenuItem">
+                <Setter Property="Template"
+                        Value="{StaticResource {x:Static MenuItem.SubmenuItemTemplateKey}}" />
+                <Setter Property="Background" Value="{StaticResource Brush05}"/>
+            </Trigger>
+        </Style.Triggers>
   </Style>
+    
+  <Style x:Key="StopButton" TargetType="Button">
+      <Setter Property="OverridesDefaultStyle" Value="True"/>
+      <Setter Property="Margin" Value="2"/>
+      <Setter Property="FontFamily" Value="Verdana"/>
+      <Setter Property="FontSize" Value="11px"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="Template">
+          <Setter.Value>
+              <ControlTemplate TargetType="{x:Type Button}">
+                  <StackPanel>
+                      <Path x:Name="bgPath" Stroke="LightGray" StrokeThickness="1" Fill="#f46f2c">  
+                          <Path.Data>  
+                              <GeometryGroup>  
+                                  <EllipseGeometry Center="15,15" RadiusX="15" RadiusY="15" />  
+                              </GeometryGroup>  
+                          </Path.Data>  
+                      </Path>
+                      <Path x:Name="stPath" Stroke="LightGray" Fill="LightGray">
+                          <Path.Data>
+                              <GeometryGroup>
+                                  <RectangleGeometry Rect="9,-21, 12 12"/> 
+                              </GeometryGroup>
+                          </Path.Data>
+                      </Path>
+                  </StackPanel>
+                  <ControlTemplate.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                          <Setter TargetName="bgPath" Property="Stroke" Value="White" />
+                          <Setter TargetName="stPath" Property="Stroke" Value="White" />
+                          <Setter TargetName="stPath" Property="Fill"   Value="White" />
+                          <!--<Setter Property="Foreground" Value="White" />
+                          <Setter TargetName="PathIcon" Property="Fill" Value="Black" />-->
+                      </Trigger>
+                      <Trigger Property="IsPressed" Value="True">
+                          <Setter TargetName="bgPath" Property="Fill" Value="OrangeRed" />
+                      </Trigger>
+                  </ControlTemplate.Triggers>
+              </ControlTemplate>
+          </Setter.Value>
+      </Setter>
+  </Style>
+
+  <Style x:Key="PlayButton" TargetType="Button">
+      <Setter Property="OverridesDefaultStyle" Value="True"/>
+      <Setter Property="Margin" Value="2"/>
+      <Setter Property="FontFamily" Value="Verdana"/>
+      <Setter Property="FontSize" Value="11px"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="Template">
+          <Setter.Value>
+              <ControlTemplate TargetType="{x:Type Button}">
+                  <StackPanel>
+                      <Path x:Name="bgPath" Stroke="LightGray" StrokeThickness="1" Fill="#3ab54a">  
+                          <Path.Data>  
+                              <GeometryGroup>  
+                                  <EllipseGeometry Center="15,15" RadiusX="15" RadiusY="15" />  
+                              </GeometryGroup>  
+                          </Path.Data>  
+                      </Path>
+                      
+                      <Polygon x:Name="stPath" Points="10, -22 23, -15, 10,-8" Stroke="LightGray" Fill="LightGray" />
+                       
+                  </StackPanel>
+                  <ControlTemplate.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                          <Setter TargetName="bgPath" Property="Stroke" Value="White" />
+                          <Setter TargetName="stPath" Property="Stroke" Value="White" />
+                          <Setter TargetName="stPath" Property="Fill"   Value="White" />
+                          <!--<Setter Property="Foreground" Value="White" />
+                          <Setter TargetName="PathIcon" Property="Fill" Value="Black" />-->
+                      </Trigger>
+                      <Trigger Property="IsPressed" Value="True">
+                          <Setter TargetName="bgPath" Property="Fill" Value="#2bf017" />
+                      </Trigger>
+                  </ControlTemplate.Triggers>
+              </ControlTemplate>
+          </Setter.Value>
+      </Setter>
+  </Style>
+    
+      
+  <Style x:Key="RecButton" TargetType="Button">
+      <Setter Property="OverridesDefaultStyle" Value="True"/>
+      <Setter Property="Margin" Value="2"/>
+      <Setter Property="FontFamily" Value="Verdana"/>
+      <Setter Property="FontSize" Value="11px"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="Template">
+          <Setter.Value>
+              <ControlTemplate TargetType="{x:Type Button}">
+                  <StackPanel>
+                      <Path x:Name="bgPath" Stroke="LightGray" StrokeThickness="1" Fill="#cc0000">  
+                          <Path.Data>  
+                              <GeometryGroup>  
+                                  <EllipseGeometry Center="15,15" RadiusX="15" RadiusY="15" />  
+                              </GeometryGroup>  
+                          </Path.Data>  
+                      </Path>
+                      <Path x:Name="stPath" Stroke="LightGray" Fill="LightGray">
+                          <Path.Data>
+                              <GeometryGroup>
+                                  <EllipseGeometry Center="15,-15" RadiusX="7" RadiusY="7" />  
+                              </GeometryGroup>
+                          </Path.Data>
+                      </Path>
+                  </StackPanel>
+                  <ControlTemplate.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                          <Setter TargetName="bgPath" Property="Stroke" Value="White" />
+                          <Setter TargetName="stPath" Property="Stroke" Value="White" />
+                          <Setter TargetName="stPath" Property="Fill"   Value="White" />
+                          <!--<Setter Property="Foreground" Value="White" />
+                          <Setter TargetName="PathIcon" Property="Fill" Value="Black" />-->
+                      </Trigger>
+                      <Trigger Property="IsPressed" Value="True">
+                          <Setter TargetName="bgPath" Property="Fill" Value="OrangeRed" />
+                      </Trigger>
+                  </ControlTemplate.Triggers>
+              </ControlTemplate>
+          </Setter.Value>
+      </Setter>
+  </Style>
+   
+    
+
 </ResourceDictionary>

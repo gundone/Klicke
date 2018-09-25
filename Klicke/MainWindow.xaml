@@ -8,21 +8,22 @@
         Title="Klicke"
         Height="522"
         Width="694"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        Closed="Window_Closed">
+
     <Grid Background="{DynamicResource ResourceKey=Brush05}">
         <Menu Height="36"
-              VerticalAlignment="Top"
-              Grid.ColumnSpan="2">
+              VerticalAlignment="Top">
             <MenuItem Header="File">
                 <MenuItem x:Name="SaveMenuItem"
                           Header="Save"
-                          RenderTransformOrigin="0.5,0.5"
-                          Click="SaveMenuItem_OnClick">
+                          Click="SaveMenuItem_OnClick"
+                          Padding="6"
+                          SnapsToDevicePixels="True">
                 </MenuItem>
                 <MenuItem x:Name="LoadMenuItem"
                           Header="Load"
-                          Click="LoadMenuItem_OnClick"
-                          RenderTransformOrigin="0.5,0.5">
+                          Click="LoadMenuItem_OnClick">
                 </MenuItem>
                 <!--<Separator />-->
                 <MenuItem Header="Exit"
@@ -30,45 +31,45 @@
                           RenderTransformOrigin="0.5,0.5">
                 </MenuItem>
             </MenuItem>
+            <MenuItem Header="Options"
+                      Click="SetOptions"></MenuItem>
             <MenuItem Header="About"></MenuItem>
         </Menu>
-        <!--<TabControl x:Name="TabControl"
-                    Background="#FF333333"
-                    BorderBrush="#FF565656"
-                    Margin="0,36,0,0"
-                    Grid.ColumnSpan="2"
-                    Grid.Column="0">
-            <TabItem Header="Record">
-                
-            </TabItem>
-            <TabItem Header="Ecexute">
-                <Grid Background="{DynamicResource ResourceKey=Brush05}">
-                   
-                </Grid>
-            </TabItem>
-        </TabControl>-->
         <Grid Background="{DynamicResource ResourceKey=Brush05}"
               Margin="0,36,0,0">
-            <Button x:Name="AddButton"
-                    Content="Add"
-                    Height="19"
-                    Width="75"
-                    HorizontalAlignment="Left"
+            <Button Style="{StaticResource RecButton}"
                     Margin="10,10,0,0"
                     VerticalAlignment="Top"
-                    Click="AddButton_OnClick" />
-            <Button x:Name="StartButton"
-                    Content="Execute"
-                    Height="19"
-                    Width="75"
                     HorizontalAlignment="Left"
-                    Margin="90,10,0,0"
+                    Click="AddButton_OnClick">
+
+            </Button>
+            <Button Style="{StaticResource PlayButton}"
+                    Margin="55,10,0,0"
                     VerticalAlignment="Top"
-                    Click="StartButton_Click" />
+                    HorizontalAlignment="Left"
+                    Click="StartButton_Click">
+
+            </Button>
+            <Button Style="{StaticResource StopButton}"
+                    Margin="100,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    Click="StopButtonClick">
+
+            </Button>
             <TextBox x:Name="ActionListBox"
                      Margin="10,45,10,10"
+                     FocusManager.IsFocusScope="True"
                      AcceptsReturn="True"
-                     TextChanged="ActionListBox_TextChanged" />
+                     TextChanged="ActionListBox_TextChanged"/>
+            <ListBox x:Name="ActionList"
+                     Margin="10,45,10,10"
+                     FocusManager.IsFocusScope="True"
+                     IsSynchronizedWithCurrentItem="True"
+                     local:ScrollCurrentItemIntoViewBehavior.AutoScrollToCurrentItem="True"
+                     SelectionMode="Single"
+                     Visibility="Hidden"/>
         </Grid>
     </Grid>
 </Window>
