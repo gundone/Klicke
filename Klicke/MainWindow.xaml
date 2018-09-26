@@ -7,13 +7,18 @@
         mc:Ignorable="d"
         Title="Klicke"
         Height="522"
-        Width="694"
+        Width="569"
         Closing="Window_Closing"
         Closed="Window_Closed">
 
     <Grid Background="{DynamicResource ResourceKey=Brush05}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="565*" />
+            <ColumnDefinition Width="121*" />
+        </Grid.ColumnDefinitions>
         <Menu Height="36"
-              VerticalAlignment="Top">
+              VerticalAlignment="Top"
+              Grid.ColumnSpan="2">
             <MenuItem Header="File">
                 <MenuItem x:Name="SaveMenuItem"
                           Header="Save"
@@ -36,7 +41,8 @@
             <MenuItem Header="About"></MenuItem>
         </Menu>
         <Grid Background="{DynamicResource ResourceKey=Brush05}"
-              Margin="0,36,0,0">
+              Margin="0,36,0,0"
+              Grid.ColumnSpan="2">
             <Button Style="{StaticResource RecButton}"
                     Margin="10,10,0,0"
                     VerticalAlignment="Top"
@@ -62,7 +68,7 @@
                      Margin="10,45,10,10"
                      FocusManager.IsFocusScope="True"
                      AcceptsReturn="True"
-                     TextChanged="ActionListBox_TextChanged"/>
+                     TextChanged="ActionListBox_TextChanged" />
             <ListBox x:Name="ActionList"
                      Margin="10,45,10,10"
                      FocusManager.IsFocusScope="True"

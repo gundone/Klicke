@@ -167,9 +167,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cur1.cur" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="13-512.ico" />
   </ItemGroup>
   <ItemGroup>

@@ -32,6 +32,7 @@ namespace Klicke
 			    && File.Exists(Properties.Settings.Default.LastOpenedScript))
 			{
 				ActionListBox.Text = string.Join("\r\n", File.ReadAllLines(Properties.Settings.Default.LastOpenedScript));
+				Title = "Klicke - " + Properties.Settings.Default.LastOpenedScript;
 			}
 		}
 
@@ -50,6 +51,7 @@ namespace Klicke
 			{
 				ActionListBox.Text = string.Join("\r\n", File.ReadAllLines(od.FileName));
 				Properties.Settings.Default.LastOpenedScript = od.FileName;
+				Title = "Klicke - " + od.FileName;
 			}
 		}
 
@@ -107,7 +109,9 @@ namespace Klicke
 		private void ActionListBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			Serial.Clear();
-			Serial.AddRange(Regex.Split(ActionListBox.Text, @"\r?\n|\r"));
+			var lines = Regex.Split(ActionListBox.Text, @"\r?\n|\r")
+				.Where(line =>line.Length > 0 && line[0] != '#');
+			Serial.AddRange(lines);
 		}
 
 		CancellationTokenSource _tokenSource2 = new CancellationTokenSource();
@@ -121,8 +125,7 @@ namespace Klicke
 			ActionList.Items.Clear();
 			foreach (var s in Serial)
 			{
-				ListBoxItem itm = new ListBoxItem();
-				itm.Content = s;
+				ListBoxItem itm = new ListBoxItem {Content = s};
 				ActionList.Items.Add(itm);
 			}
 			ActionList.Visibility = Visibility.Visible;
@@ -152,6 +155,15 @@ namespace Klicke
 				{
 					//ignored
 				}
+			}, ct).ContinueWith(_ =>
+			{
+				this.Dispatcher.Invoke(
+				(Action) (() =>
+				{
+					ActionList.Visibility = Visibility.Hidden;
+					ActionListBox.Visibility = Visibility.Visible;
+					ActionListBox.IsEnabled = true;
+				}));
 			}, ct);
 		}
 
@@ -164,8 +176,10 @@ namespace Klicke
 			};
 			if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 			{
-				File.WriteAllLines(sd.FileName, Serial);
+				File.WriteAllText(sd.FileName, ActionListBox.Text);
 				Properties.Settings.Default.LastOpenedScript = sd.FileName;
+				Properties.Settings.Default.Save();
+				Title = "Klicke - " + sd.FileName;
 			}
 		}
 

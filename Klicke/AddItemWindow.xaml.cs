@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Forms;
+using CommandProcessor;
 using HookManagerNS;
 using KeyInterceptorNS;
 using Cursor = System.Windows.Input.Cursor;
@@ -75,25 +76,67 @@ namespace Klicke
 		{
 			_wheel += e.Delta;
 			TextBoxWheel.Text = _wheel.ToString();
-			var action = $"MouseAction: X={e.X};Y={e.Y};Button={e.Button};Event=Scroll;Clicks={e.Clicks};Wheel={e.Delta}";
+			System.Drawing.Point click = new System.Drawing.Point(e.X, e.Y);
+			
+			var action = $"MouseAction: X={click.X};Y={click.Y};Button={e.Button};Event=Scroll;Clicks={e.Clicks};Wheel={e.Delta}";
 			Parent.AddAction(action);
 		}
 
 		private void MouseMoveHook(object sender, MouseEventArgs e)
 		{
-			TextBoxX.Text = e.X.ToString();
-			TextBoxY.Text = e.Y.ToString();
+			System.Drawing.Point click = new System.Drawing.Point(e.X, e.Y);
+			if (_wndBound != null)
+			{
+				IntPtr hWndBound = IntPtr.Zero;
+				hWndBound = string.IsNullOrWhiteSpace(_wndBound.Item2) 
+					? Window.SearchWindow(_wndBound.Item1, null).FirstOrDefault() 
+					: Window.SearchWindow(_wndBound.Item1, _wndBound.Item2).FirstOrDefault();
+				if (hWndBound != IntPtr.Zero)
+				{
+					Window.ScreenToClient(hWndBound, ref click);
+				}
+			}
+			TextBoxX.Text = click.X.ToString();
+			TextBoxY.Text = click.Y.ToString();
 		}
 
 		private void MouseDownHook(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
-			var action = $"MouseAction: X={e.X};Y={e.Y};Button={e.Button};Event=Down;Clicks={e.Clicks};Wheel={e.Delta}";
+			System.Drawing.Point click = new System.Drawing.Point(e.X, e.Y);
+			var attr = "";
+			if (_wndBound != null)
+			{
+				IntPtr hWndBound = IntPtr.Zero;
+				hWndBound = string.IsNullOrWhiteSpace(_wndBound.Item2) 
+					? Window.SearchWindow(_wndBound.Item1, null).FirstOrDefault() 
+					: Window.SearchWindow(_wndBound.Item1, _wndBound.Item2).FirstOrDefault();
+				if (hWndBound != IntPtr.Zero)
+				{
+					Window.ScreenToClient(hWndBound, ref click);
+					attr = $"WndClass={_wndBound.Item1};WndTitle={_wndBound.Item2};";
+				}
+			}
+			var action = $"MouseAction: {attr}X={click.X};Y={click.Y};Button={e.Button};Event=Down;Clicks={e.Clicks};Wheel={e.Delta}";
 			Parent.AddAction(action);
 		}
 
 		private void MouseUpHook(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
-			var action = $"MouseAction: X={e.X};Y={e.Y};Button={e.Button};Event=Up;Clicks={e.Clicks};Wheel={e.Delta}";
+			System.Drawing.Point click = new System.Drawing.Point(e.X, e.Y);
+			var attr = "";
+			if (_wndBound != null)
+			{
+				IntPtr hWndBound = IntPtr.Zero;
+				hWndBound = string.IsNullOrWhiteSpace(_wndBound.Item2) 
+					? Window.SearchWindow(_wndBound.Item1, null).FirstOrDefault() 
+					: Window.SearchWindow(_wndBound.Item1, _wndBound.Item2).FirstOrDefault();
+				if (hWndBound != IntPtr.Zero)
+				{
+					Window.ScreenToClient(hWndBound, ref click);
+					attr = $"WndClass={_wndBound.Item1};WndTitle={_wndBound.Item2};";
+				}
+			}
+			var action = $"MouseAction: {attr}X={click.X};Y={click.Y};Button={e.Button};Event=Up;Clicks={e.Clicks};Wheel={e.Delta}";
 			Parent.AddAction(action);
 		}
 
@@ -123,10 +166,29 @@ namespace Klicke
 			Parent.AddAction(action);
 		}
 
+		Tuple<string,string> _wndBound = null;
+
 		private void WindowActionSelect(object sender, MouseEventArgs e)
 		{
-			var action = $"WaitForWindow: WndClass={textBoxWndClass.Text};WndTitle={textBoxWndTitle.Text};Maximize={MaximizeWndCheckBox.IsChecked};Close={CloseWndCheckBox.IsChecked}";
+
+			var action = $"WaitForWindow: WndClass={textBoxWndClass.Text};" +
+			             $"WndTitle={textBoxWndTitle.Text};" +
+			             $"Maximize={MaximizeWndCheckBox.IsChecked};" +
+			             $"Close={CloseWndCheckBox.IsChecked};" +
+			             $"Bind={BindWindow.IsChecked};" +
+			             $"Unbind={UnbindWindow.IsChecked}";
+			if (BindWindow.IsChecked ?? false)
+			{
+				_wndBound = new Tuple<string, string>(textBoxWndClass.Text, textBoxWndTitle.Text);
+			}
+			if (UnbindWindow.IsChecked ?? false)
+			{
+				_wndBound = null;
+			}
 			Parent.AddAction(action);
+			HookManager.MouseMove -= WindowSearch;
+			HookManager.ClearAll();
+			KeyInterceptor.ClearAll();
 		}
 
 		private void WindowSearchStartStop(object sender, KeyEventArgs e)
@@ -150,7 +212,7 @@ namespace Klicke
 			StringBuilder Title = new StringBuilder(256);
 			//Get the window class name
 			var nRet = Window.GetClassName(hWnd, ClassName, ClassName.Capacity);
-			var nx = Window.GetWindowText(hWnd, Title, Title.Capacity);
+			var nx   = Window.GetWindowText(hWnd, Title, Title.Capacity);
 			if(nRet != 0)
 			{
 				textBoxWndClass.Text = ClassName.ToString();
@@ -169,6 +231,15 @@ namespace Klicke
 			
 			if(MouseTab.IsSelected)
 			{
+				if (_wndBound != null)
+				{
+					WndBound.Text = $"WndClass={_wndBound.Item1};" +
+					                   $"WndTitle={_wndBound.Item2};";
+				}
+				else
+				{
+					WndBound.Text = "";
+				}
 				KeyInterceptor.KeyDown += MouseEventsStartStop;
 			}
 			else if (KeyboardTab.IsSelected)
@@ -177,7 +248,7 @@ namespace Klicke
 			}
 			else if (WaitForWindowTab?.IsSelected ?? false)
 			{
-				KeyInterceptor.KeyDown += WindowSearchStartStop;
+				//KeyInterceptor.KeyDown += WindowSearchStartStop;
 			}
 		}
 
@@ -230,6 +301,38 @@ namespace Klicke
 		{
 			var action = $"SetKeyboardLayout: Lang={(KbdLayout.SelectedItem  as ListBoxItem)?.Content}";
 			Parent.AddAction(action);
+		}
+
+		private void BindWindow_OnClick(object sender, RoutedEventArgs e)
+		{
+			
+		}
+
+		private void UnbindWndClick(object sender, RoutedEventArgs e)
+		{
+			_wndBound = null;
+			WndBound.Text = "";
+		}
+
+		private void WndBound_OnTextChanged(object sender, TextChangedEventArgs e)
+		{
+			var command = Command.Parse($@"BindWindow: {WndBound.Text}");
+			var cls = command.Attr.ContainsKey("WndClass") ? command.Attr["WndClass"]: "";
+			var ttl = command.Attr.ContainsKey("WndTitle") ? command.Attr["WndTitle"]: "";
+			_wndBound = !string.IsNullOrWhiteSpace(cls) 
+				? new Tuple<string, string>(cls, ttl) 
+				: null;
+		}
+
+		private void OnTop_OnClick(object sender, RoutedEventArgs e)
+		{
+			Topmost = OnTop.IsChecked ?? false;
+		}
+
+		private void StartWndSearching_OnClick(object sender, RoutedEventArgs e)
+		{
+			HookManager.MouseMove += WindowSearch;
+			HookManager.MouseUp   += WindowActionSelect;
 		}
 	}
 }

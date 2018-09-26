@@ -49,8 +49,40 @@ namespace CommandProcessor
 		    var btn    = command.Attr["Button"];
 		    var clicks = int.Parse(command.Attr["Clicks"]);
 		    var wheel  = int.Parse(command.Attr["Wheel"]);
+		    var evnt   = command.Attr["Event"];
 
-		    Cursor.Position = new Point(x, y);
+		    var wndClass = command.Attr.ContainsKey("WndClass")?command.Attr["WndClass"]:"";
+		    var wndTitle = command.Attr.ContainsKey("WndTitle")?command.Attr["WndTitle"]:"";
+		    if (!string.IsNullOrWhiteSpace(wndClass) || _currentWnd!= IntPtr.Zero)
+		    {
+			    IntPtr hWnd = IntPtr.Zero;
+			    if (_currentWnd != IntPtr.Zero)
+				    hWnd = _currentWnd;
+			    if (!string.IsNullOrWhiteSpace(wndClass))
+			    {
+				    if (string.IsNullOrWhiteSpace(wndTitle))
+					    wndTitle = null;
+				    hWnd = Window.SearchWindow(wndClass, wndTitle).FirstOrDefault();
+			    }
+					
+				
+			    if (hWnd != IntPtr.Zero)
+			    {
+				    switch (evnt)
+				    {
+					    case "Down":
+						    Mouse.DownToWindow(hWnd, new Point(x,y));
+						    break;
+					    case "Up": 
+						    Mouse.UpToWindow(hWnd, new Point(x,y));
+						    break;
+				    }
+
+				    return;
+			    }
+				return;
+		    }
+
 		    //Mouse.LinearSmoothMove(new Point(x, y), TimeSpan.FromMilliseconds(200));
 		    if (wheel != 0)
 		    {
@@ -94,9 +126,11 @@ namespace CommandProcessor
 	    {
 		    var command = Command.Parse((string)args[0]);
 		    var wndClass = command.Attr["WndClass"];
-		    var wndTitle = command.Attr["WndTitle"];
+		    var wndTitle = command.Attr.ContainsKey("WndTitle") ? command.Attr["WndTitle"] : null;
 			var max      = command.Attr.ContainsKey("Maximize") && bool.Parse(command.Attr["Maximize"]);
 		    var close    = command.Attr.ContainsKey("Close") && bool.Parse(command.Attr["Close"]);
+		    var bind     = command.Attr.ContainsKey("Bind") && bool.Parse(command.Attr["Bind"]);
+		    var unbind   = command.Attr.ContainsKey("Unbind") && bool.Parse(command.Attr["Unbind"]);
 		    var checkSec = 1;
 			Stopwatch t = new Stopwatch();
 			t.Start();
@@ -107,6 +141,14 @@ namespace CommandProcessor
 			    hWnd = Window.SearchWindow(wndClass, wndTitle).FirstOrDefault();
 		    } while (hWnd == IntPtr.Zero);
 			Thread.Sleep(100);
+		    if (bind)
+		    {
+			    _currentWnd = hWnd;
+		    }
+		    if (unbind)
+		    {
+				_currentWnd = IntPtr.Zero;
+		    }
 		    if (close)
 		    {
 				Window.CloseWindow(hWnd);

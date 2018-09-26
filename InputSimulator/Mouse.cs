@@ -13,6 +13,11 @@ namespace InputSimulator
 {
     public static class Mouse
     {
+	    [DllImport("user32.dll")]
+	    static extern bool ClientToScreen(IntPtr hWnd, ref Point lpPoint);
+
+	    [DllImport("user32.dll")]
+	    internal static extern uint SendInput(uint nInputs, [MarshalAs(UnmanagedType.LPArray), In] INPUT[] pInputs,  int cbSize);
 	    [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
 	    public static extern void mouse_event(uint dwFlags, uint dx, uint dy, int cButtons, UIntPtr dwExtraInfo);
 	    private const uint MOUSEEVENTF_LEFTDOWN = 0x02;
@@ -89,5 +94,80 @@ namespace InputSimulator
 		    while (timeFraction < 1.0);
 		    Cursor.Position = newPosition;
 	    }
+
+	    public static void DownToWindow(IntPtr wndHandle , Point clientPoint)
+	    {
+		    var oldPos = Cursor.Position;
+
+		    /// get screen coordinates
+		    ClientToScreen(wndHandle, ref clientPoint);
+
+		    /// set cursor on coords, and press mouse
+		    Cursor.Position = new Point(clientPoint.X, clientPoint.Y);
+
+		    var inputMouseDown = new INPUT();
+		    inputMouseDown.Type = 0; /// input type mouse
+		    inputMouseDown.Data.Mouse.Flags = 0x0002; /// left button down
+
+
+		    var inputs = new INPUT[] { inputMouseDown};
+		    SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(INPUT)));
+
+		    /// return mouse 
+		    Cursor.Position = oldPos;
+	    }
+
+	    public static void UpToWindow(IntPtr wndHandle , Point clientPoint)
+	    {
+		    var oldPos = Cursor.Position;
+
+		    /// get screen coordinates
+		    ClientToScreen(wndHandle, ref clientPoint);
+
+		    /// set cursor on coords, and press mouse
+		    Cursor.Position = new Point(clientPoint.X, clientPoint.Y);
+
+		    var inputMouseUp = new INPUT();
+		    inputMouseUp.Type = 0; /// input type mouse
+		    inputMouseUp.Data.Mouse.Flags = 0x0004; /// left button up
+
+		    var inputs = new INPUT[] { inputMouseUp };
+		    SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(INPUT)));
+
+		    /// return mouse 
+		    Cursor.Position = oldPos;
+	    }
+
+	    public static void ClickToWindow(IntPtr wndHandle , Point clientPoint)
+	    {
+			DownToWindow(wndHandle, clientPoint);
+			UpToWindow(wndHandle, clientPoint);
+		}
+
+#pragma warning disable 649
+	    internal struct INPUT
+	    {
+		    public UInt32 Type;
+		    public MOUSEKEYBDHARDWAREINPUT Data;
+	    }
+
+	    [StructLayout(LayoutKind.Explicit)]
+	    internal struct MOUSEKEYBDHARDWAREINPUT
+	    {
+		    [FieldOffset(0)]
+		    public MOUSEINPUT Mouse;
+	    }
+
+	    internal struct MOUSEINPUT
+	    {
+		    public Int32 X;
+		    public Int32 Y;
+		    public UInt32 MouseData;
+		    public UInt32 Flags;
+		    public UInt32 Time;
+		    public IntPtr ExtraInfo;
+	    }
+
+#pragma warning restore 649
     }
 }

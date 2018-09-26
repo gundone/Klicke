@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -47,6 +48,11 @@ namespace InputSimulator
 		[DllImport("user32.dll")]
 		public static extern IntPtr WindowFromPoint(POINT Point);
 
+		[DllImport("user32.dll")]
+		public static extern bool ClientToScreen(IntPtr hWnd, ref Point lpPoint);
+
+		[DllImport ("user32.dll")]
+		public static extern bool ScreenToClient (IntPtr hWnd, ref Point lpPoint);
 
 		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName,int nMaxCount);
@@ -61,7 +67,11 @@ namespace InputSimulator
 		public static extern bool ShowWindow(IntPtr hWnd, ShowWindowCommands nCmdShow);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		private static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
+		public static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+
 
 		private const UInt32 WM_CLOSE          = 0x0010;
 
@@ -94,15 +104,18 @@ namespace InputSimulator
 			GetClassName(hWnd, sb, sb.Capacity);
 			//wndClasses.Add(sb.ToString());
 			if (data != null && 
-			    sb.ToString() == data.Wndclass 
-			    && !string.IsNullOrWhiteSpace(data.Title))
+			    sb.ToString() == data.Wndclass)
 			{
 				sb = new StringBuilder(1024);
 				GetWindowText(hWnd, sb, sb.Capacity);
-				if (sb.ToString().Contains(data.Title))
+				if (!string.IsNullOrWhiteSpace(data.Title) && sb.ToString().Contains(data.Title))
 				{
 					data.hWnd.Add(hWnd);
 					//return false;    // Found the wnd, halt enumeration
+				}
+				else if (data.Title == null)
+				{
+					data.hWnd.Add(hWnd);
 				}
 			}
 			return true;
@@ -152,6 +165,7 @@ namespace InputSimulator
 			public int Right;
 			public int Bottom;
 		}
+
 
 	}
 
