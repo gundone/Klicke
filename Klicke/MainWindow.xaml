@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Klicke"
+        xmlns:klicke="clr-namespace:Klicke"
         mc:Ignorable="d"
         Title="Klicke"
         Height="522"
@@ -64,16 +64,19 @@
                     Click="StopButtonClick">
 
             </Button>
-            <TextBox x:Name="ActionListBox"
+            <klicke:RichTextBoxE Background="{DynamicResource ResourceKey=Brush05}"
+                     x:Name="ActionTextBox"
                      Margin="10,45,10,10"
+                     Foreground="WhiteSmoke"
+                     FontSize="14"
                      FocusManager.IsFocusScope="True"
-                     AcceptsReturn="True"
-                     TextChanged="ActionListBox_TextChanged" />
+                     RichTextBox.TextChanged="ActionListBox_TextChanged"/>
             <ListBox x:Name="ActionList"
                      Margin="10,45,10,10"
+                     
                      FocusManager.IsFocusScope="True"
                      IsSynchronizedWithCurrentItem="True"
-                     local:ScrollCurrentItemIntoViewBehavior.AutoScrollToCurrentItem="True"
+                     klicke:ScrollCurrentItemIntoViewBehavior.AutoScrollToCurrentItem="True"
                      SelectionMode="Single"
                      Visibility="Hidden"/>
         </Grid>

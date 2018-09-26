@@ -18,20 +18,18 @@ namespace Klicke
 
 		public static void OnAutoScrollToCurrentItemChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
 		{
-			var listBox = obj as ListBox;
-			if (listBox == null) return;
+			if (!(obj is ListBox listBox)) return;
 
 			var newValue = (bool)e.NewValue;
 			if (newValue)
-				listBox.SelectionChanged += listBoxSelectionChanged;
+				listBox.SelectionChanged += ListBoxSelectionChanged;
 			else
-				listBox.SelectionChanged -= listBoxSelectionChanged;
+				listBox.SelectionChanged -= ListBoxSelectionChanged;
 		}
 
-		static void listBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+		public static void ListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			var listBox = sender as ListBox;
-			if (listBox == null || listBox.SelectedItem == null || listBox.Items == null) return;
+			if (!(sender is ListBox listBox) || listBox.SelectedItem == null) return;
 
 			listBox.Items.MoveCurrentTo(listBox.SelectedItem);
 			listBox.ScrollIntoView(listBox.SelectedItem);

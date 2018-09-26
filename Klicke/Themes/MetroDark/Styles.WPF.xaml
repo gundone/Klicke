@@ -738,6 +738,18 @@
     </Setter>
   </Style>
 
+  <Style x:Key="RichTextBoxStyle" TargetType="RichTextBox">
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+      <Setter Property="FontSize" Value="14.667" />
+      <Setter Property="FontFamily" Value="Segoe UI" />
+      <Setter Property="Background" Value="{StaticResource TextBoxBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorderBrush}" />
+      <Setter Property="MinHeight" Value="30" />
+      <Setter Property="Padding" Value="6,3" />
+      <Setter Property="SelectionBrush" Value="{StaticResource TextBoxFocusedBrush}" />
+      <Setter Property="Validation.ErrorTemplate" Value="{StaticResource TextBoxValidationToolTipTemplate}"/>
+  </Style>
   <!-- *********************************  ListBox Style  ********************************* -->
   <Style x:Key="ListBoxStyle" TargetType="ListBox">
     <Setter Property="Padding" Value="0" />
