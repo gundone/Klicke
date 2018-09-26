@@ -137,8 +137,6 @@ namespace Klicke
 			{
 				try
 				{
-
-
 					foreach (var line in Serial)
 					{
 						ActionList.Dispatcher.Invoke((Action) (() => { ActionList.SelectedIndex = i++; }));
