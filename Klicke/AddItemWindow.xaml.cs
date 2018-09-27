@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Windows.Forms;
 using CommandProcessor;
 using HookManagerNS;
+using InputSimulator;
 using KeyInterceptorNS;
 using Cursor = System.Windows.Input.Cursor;
 using KeyEventArgs = System.Windows.Forms.KeyEventArgs;
@@ -69,6 +70,7 @@ namespace Klicke
 			{
 				KeyInterceptor.ClearAll();
 				HookManager.ClearAll();
+				KeyInterceptor.KeyDown += MouseEventsStartStop;
 			}
 		}
 
@@ -151,19 +153,31 @@ namespace Klicke
 			{
 				KeyInterceptor.ClearAll();
 				HookManager.ClearAll();
+				KeyInterceptor.KeyDown += KeyboardEventsStartStop;
 			}
 		}
 
+
+		private Keys _lastDown;
 		private void KeyInterceptorOnKeyUp(object sender, KeyEventArgs keyEventArgs)
 		{
+			var code = keyEventArgs.KeyCode;
+			if (code == Keys.F2 || code == Keys.F3) return;
+
+			_lastDown = Keys.Zoom;
 			var action = $"KeyboardAction: KeyUp={keyEventArgs.KeyCode}";
 			Parent.AddAction(action);
 		}
 
 		private void KeyInterceptorOnKeyDown(object sender, KeyEventArgs keyEventArgs)
 		{
-			var action = $"KeyboardAction: KeyDown={keyEventArgs.KeyCode}";
+			var code = keyEventArgs.KeyCode;
+			if (code == Keys.F2 || code == Keys.F3 || _lastDown == code) return;
+
+			_lastDown = code;
+			var action = $"KeyboardAction: KeyDown={code}";
 			Parent.AddAction(action);
+
 		}
 
 		Tuple<string,string> _wndBound = null;
