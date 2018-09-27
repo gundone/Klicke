@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Media;
 using CommandProcessor;
 using Application = System.Windows.Application;
@@ -26,10 +27,25 @@ namespace Klicke
 		private List<string> Serial = new List<string>();
 
 		OptionsWindow optWnd = new OptionsWindow();
+		public static readonly RoutedCommand Save = new RoutedCommand();
+
+		public static readonly RoutedCommand SaveAs = new RoutedCommand();
+
+		public static readonly RoutedCommand Open = new RoutedCommand();
+
+		private void QuickSave(object sender, ExecutedRoutedEventArgs e)
+		{
+			var fileName = Properties.Settings.Default.LastOpenedScript;
+			File.WriteAllText(fileName, new TextRange(ActionTextBox.Document.ContentStart, ActionTextBox.Document.ContentEnd).Text);
+			Properties.Settings.Default.LastOpenedScript = fileName;
+			Properties.Settings.Default.Save();
+		}
 
 		public MainWindow()
 		{
 			InitializeComponent();
+			Save.InputGestures.Add( new KeyGesture( Key.S , ModifierKeys.Control ));
+			ActionTextBox.Document.PageWidth = 1000;
 			if (Properties.Settings.Default.OpenLastScript 
 			    && File.Exists(Properties.Settings.Default.LastOpenedScript))
 			{
@@ -44,7 +60,7 @@ namespace Klicke
 			Close();
 		}
 
-		private void LoadMenuItem_OnClick(object sender, RoutedEventArgs e)
+		private void LoadMenuItem_OnClick(object sender, ExecutedRoutedEventArgs e)
 		{
 			OpenFileDialog od = new OpenFileDialog
 			{
@@ -110,21 +126,37 @@ namespace Klicke
 		}
 
 		List<Tag> m_tags = new List<Tag>();
-		private List<Tag> comments = new List<Tag>();
+		private List<Tag> m_comments = new List<Tag>();
+		
 
 
 		public static bool IsKnownTag(string tag)
 		{
-			string[] specialWords = { "string", "char", "null", "#" };              
+			string[] specialWords = { "WaitForWindow", "Sleep", "MouseAction", "KeyboardAction", "OpenProgram" };              
 			var tags = new List<string>(specialWords);     
 			// We also want to know all possible delimiters so adding this stuff.     
 			
 			return tags.Exists(delegate(string s) { return s.ToLower().Equals(tag.ToLower()); });
 		}
 
-		public static bool IsComment(string tag)
+		public void FindCommentedStrings(Run theRun)
 		{
-			return true;
+			var lines = Regex.Split(theRun.Text, "\r\n|\n");
+			var index = 0;
+			foreach (var line in lines)
+			{
+				if (line.Length >0 && line[0] == '#')
+				{
+					Tag t = new Tag();
+					var sIndex = theRun.Text.IndexOf(line, index, StringComparison.Ordinal);
+					var eIndex = sIndex + line.Length;
+					t.StartPosition = theRun.ContentStart.GetPositionAtOffset(sIndex, LogicalDirection.Forward);
+					t.EndPosition   = theRun.ContentStart.GetPositionAtOffset(eIndex + 1, LogicalDirection.Backward);
+					t.Word = line;
+					m_comments.Add(t);
+					index = eIndex;
+				}
+			}
 		}
 
 
@@ -142,7 +174,8 @@ namespace Klicke
 				';',
 				'\n',
 				'\t',
-				'\r'
+				'\r',
+				'='
 			};
 			var specials = new List<char>(chrs);
 			foreach (var item in specials)
@@ -168,12 +201,15 @@ namespace Klicke
 					{
 						eIndex = i - 1;
 						string word = text.Substring(sIndex, eIndex - sIndex + 1);
-						if (IsKnownTag(word))
+						Tag t = new Tag
 						{
-							Tag t = new Tag();
-							t.StartPosition = theRun.ContentStart.GetPositionAtOffset(sIndex, LogicalDirection.Forward);
-							t.EndPosition = theRun.ContentStart.GetPositionAtOffset(eIndex + 1, LogicalDirection.Backward);
-							t.Word = word;
+							StartPosition = theRun.ContentStart.GetPositionAtOffset(sIndex, LogicalDirection.Forward),
+							EndPosition   = theRun.ContentStart.GetPositionAtOffset(eIndex + 1, LogicalDirection.Backward),
+							Word = word
+						};
+
+						if (!(t.StartPosition is null || t.EndPosition is null) && IsKnownTag(word))
+						{
 							m_tags.Add(t);
 						}
 					}
@@ -192,45 +228,66 @@ namespace Klicke
 			}
 		}
 
+		private int _runs = 0;
 		private void ActionListBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			if (ActionTextBox.Document == null)
 				return;
-			ActionTextBox.TextChanged -= ActionListBox_TextChanged;
+			//ActionTextBox.TextChanged -= ActionListBox_TextChanged;
+			
+			//m_tags.Clear();
+			//m_comments.Clear();
 
-			m_tags.Clear();
+			////first clear all the formats
+			//TextRange documentRange = new TextRange(ActionTextBox.Document.ContentStart, ActionTextBox.Document.ContentEnd);
+			//documentRange.ClearAllProperties();
+			////text = documentRange.Text; //fix 2
+			//if (true)
+			//{
+			//	//Now let's create navigator to go though the text, find all the keywords but do not hightlight
+			//	TextPointer navigator = ActionTextBox.Document.ContentStart;
+				
+				
+			//	while (navigator?.CompareTo(ActionTextBox.Document.ContentEnd) < 0)
+			//	{
+			//		TextPointerContext context = navigator.GetPointerContext(LogicalDirection.Backward);
+			//		if (context == TextPointerContext.ElementStart && navigator.Parent is Run)
+			//		{
+			//			var text = ((Run)navigator.Parent).Text; //fix 2
+			//			if (text != "")
+			//			{	
+			//				CheckWordsInRun((Run)navigator.Parent);
+			//				_runs++;
+			//			}
+							
+			//		}
+			//		navigator = navigator.GetNextContextPosition(LogicalDirection.Forward);
+			//	}
 
-			//first clear all the formats
-			TextRange documentRange = new TextRange(ActionTextBox.Document.ContentStart, ActionTextBox.Document.ContentEnd);
-			documentRange.ClearAllProperties();
-			//text = documentRange.Text; //fix 2
-
-			//Now let's create navigator to go though the text, find all the keywords but do not hightlight
-			TextPointer navigator = ActionTextBox.Document.ContentStart;
-			while (navigator?.CompareTo(ActionTextBox.Document.ContentEnd) < 0)
-			{
-				TextPointerContext context = navigator.GetPointerContext(LogicalDirection.Backward);
-				if (context == TextPointerContext.ElementStart && navigator.Parent is Run)
-				{
-					var text = ((Run)navigator.Parent).Text; //fix 2
-					if (text != "")
-						CheckWordsInRun((Run)navigator.Parent);
-				}
-				navigator = navigator.GetNextContextPosition(LogicalDirection.Forward);
-			}
-
-			//only after all keywords are found, then we highlight them
-			for (int i = 0; i < m_tags.Count; i++)
-			{
-				try
-				{
-					TextRange range = new TextRange(m_tags[i].StartPosition, m_tags[i].EndPosition);
-					range.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Blue));
-					range.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
-				}
-				catch { }
-			}
-			ActionTextBox.TextChanged += ActionListBox_TextChanged;
+			//	//only after all keywords are found, then we highlight them
+			//	for (int i = 0; i < m_comments.Count; i++)
+			//	{
+			//		try
+			//		{
+			//			TextRange range = new TextRange(m_comments[i].StartPosition, m_comments[i].EndPosition);
+			//			range.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Tomato));
+			//			range.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+			//		}
+			//		catch { }
+			//	}
+			//	for (int i = 0; i < m_tags.Count; i++)
+			//	{
+			//		try
+			//		{
+			//			TextRange range = new TextRange(m_tags[i].StartPosition, m_tags[i].EndPosition);
+			//			range.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.DarkCyan));
+			//			range.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+			//		}
+			//		catch { }
+			//	}
+			//}
+			
+			//ActionTextBox.TextChanged += ActionListBox_TextChanged;
 			Serial.Clear();
 
 			var lines = Regex.Split(ActionTextBox.Text, @"\r?\n|\r")
@@ -289,8 +346,60 @@ namespace Klicke
 			}, ct);
 		}
 
+		private void StepButton_Click(object sender, RoutedEventArgs e)
+		{
+			ActionTextBox.IsEnabled = false;
+			ActionTextBox.Visibility = Visibility.Hidden;
+			ActionList.Items.Clear();
+
+
+			var linesToRun = Regex.Split(ActionTextBox.Selection.Text, "\r\n|\n");
+			foreach (var s in linesToRun)
+			{
+				ListBoxItem itm = new ListBoxItem {Content = s};
+				ActionList.Items.Add(itm);
+			}
+			ActionList.Visibility = Visibility.Visible;
+			int i = 0;
+			_tokenSource2 = new CancellationTokenSource();
+			CancellationToken ct =  _tokenSource2.Token;
+
+			var t = Task.Run(() =>
+			{
+				try
+				{
+					foreach (var line in linesToRun)
+					{
+						ActionList.Dispatcher.Invoke((Action) (() => { ActionList.SelectedIndex = i++; }));
+						if (ct.IsCancellationRequested)
+						{
+							// Clean up here, then...
+							break;
+						}
+
+						Executor.Run(line)?.ConfigureAwait(false);
+					}
+				}
+				catch (OperationCanceledException oexc)
+				{
+					//ignored
+				}
+			}, ct).ContinueWith(_ =>
+			{
+				this.Dispatcher.Invoke(
+					(Action) (() =>
+					{
+						ActionList.Visibility = Visibility.Hidden;
+						ActionTextBox.Visibility = Visibility.Visible;
+						ActionTextBox.IsEnabled = true;
+						StepButton.IsEnabled = false;
+					}));
+			}, ct);
+		}
+
+
 	
-		private void SaveMenuItem_OnClick(object sender, RoutedEventArgs e)
+		private void SaveAsMenuItem_OnClick(object sender, RoutedEventArgs e)
 		{
 			SaveFileDialog sd = new SaveFileDialog
 			{
@@ -329,5 +438,15 @@ namespace Klicke
 			ActionTextBox.IsEnabled = true;
 		}
 
+		private void ActionTextBox_OnMouseUp(object sender, MouseButtonEventArgs e)
+		{
+			StepButton.IsEnabled = !ActionTextBox.Selection.IsEmpty;
+		}
+
+
+		private void SaveMenuItem_OnClick(object sender, RoutedEventArgs e)
+		{
+			Save.Execute(this, null);
+		}
 	}
 }

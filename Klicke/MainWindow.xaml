@@ -10,7 +10,25 @@
         Width="569"
         Closing="Window_Closing"
         Closed="Window_Closed">
-
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static klicke:MainWindow.Save}" 
+                        Executed="QuickSave"/>
+        <CommandBinding Command="{x:Static klicke:MainWindow.SaveAs}" 
+                        Executed="SaveAsMenuItem_OnClick"/>
+        <CommandBinding Command="{x:Static klicke:MainWindow.Open}" 
+                        Executed="LoadMenuItem_OnClick"/>
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="S" 
+                    Modifiers="Control" 
+                    Command="{x:Static klicke:MainWindow.Save}"/>
+        <KeyBinding Key="S" 
+                    Modifiers="Control+Shift" 
+                    Command="{x:Static klicke:MainWindow.SaveAs}"/>
+        <KeyBinding Key="O" 
+                    Modifiers="Control" 
+                    Command="{x:Static klicke:MainWindow.Open}"/>
+    </Window.InputBindings>
     <Grid Background="{DynamicResource ResourceKey=Brush05}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="565*" />
@@ -21,14 +39,22 @@
               Grid.ColumnSpan="2">
             <MenuItem Header="File">
                 <MenuItem x:Name="SaveMenuItem"
-                          Header="Save"
-                          Click="SaveMenuItem_OnClick"
+                          Header="_Save"
+                          Command="{x:Static klicke:MainWindow.Save}" 
+                          InputGestureText="Ctrl+S"
+                          Padding="6"
+                          SnapsToDevicePixels="True"></MenuItem>
+                <MenuItem x:Name="SaveAsMenuItem"
+                          Header="Save as"
+                          Command="{x:Static klicke:MainWindow.SaveAs}" 
+                          InputGestureText="Ctrl+Shift+S"
                           Padding="6"
                           SnapsToDevicePixels="True">
                 </MenuItem>
                 <MenuItem x:Name="LoadMenuItem"
-                          Header="Load"
-                          Click="LoadMenuItem_OnClick">
+                          Header="Open"
+                          Command="{x:Static klicke:MainWindow.Open}"
+                          InputGestureText="Ctrl+O">
                 </MenuItem>
                 <!--<Separator />-->
                 <MenuItem Header="Exit"
@@ -64,13 +90,23 @@
                     Click="StopButtonClick">
 
             </Button>
+            <Button Style="{StaticResource StepButton}"
+                    x:Name="StepButton"
+                    Margin="145,10,0,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Left"
+                    Click="StepButton_Click"
+                    IsEnabled="False">
+            </Button>
             <klicke:RichTextBoxE Background="{DynamicResource ResourceKey=Brush05}"
                      x:Name="ActionTextBox"
                      Margin="10,45,10,10"
                      Foreground="WhiteSmoke"
                      FontSize="14"
+                     HorizontalScrollBarVisibility="Auto"
                      FocusManager.IsFocusScope="True"
-                     RichTextBox.TextChanged="ActionListBox_TextChanged"/>
+                     RichTextBox.TextChanged="ActionListBox_TextChanged"
+                     RichTextBox.PreviewMouseUp="ActionTextBox_OnMouseUp"/>
             <ListBox x:Name="ActionList"
                      Margin="10,45,10,10"
                      

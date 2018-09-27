@@ -1095,6 +1095,50 @@
           </Setter.Value>
       </Setter>
   </Style>
+    
+    
+      
+  <Style x:Key="StepButton" TargetType="Button">
+      <Setter Property="OverridesDefaultStyle" Value="True"/>
+      <Setter Property="Margin" Value="2"/>
+      <Setter Property="FontFamily" Value="Verdana"/>
+      <Setter Property="FontSize" Value="11px"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="Template">
+          <Setter.Value>
+              <ControlTemplate TargetType="{x:Type Button}">
+                  <StackPanel>
+                      <Path x:Name="bgPath" Stroke="LightGray" StrokeThickness="1" Fill="#14f2ec">  
+                          <Path.Data>  
+                              <GeometryGroup>  
+                                  <EllipseGeometry Center="15,15" RadiusX="15" RadiusY="15" />  
+                              </GeometryGroup>  
+                          </Path.Data>  
+                      </Path>
+                      <Polygon x:Name="stPath"  Points="9,-22  22,-15, 9,-8"   Stroke="LightGray" Fill="LightGray" />
+                      <Polygon x:Name="stPath1" Points="14,-22  26,-15, 14,-8" Stroke="LightGray" Fill="LightGray" />
+                  </StackPanel>
+                  <ControlTemplate.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                          <Setter TargetName="bgPath" Property="Stroke" Value="White" />
+                          <Setter TargetName="stPath" Property="Stroke" Value="White" />
+                          <Setter TargetName="stPath" Property="Fill"   Value="White" />
+                          <Setter TargetName="stPath1" Property="Stroke" Value="White" />
+                          <Setter TargetName="stPath1" Property="Fill"   Value="White" />
+                          <!--<Setter Property="Foreground" Value="White" />
+                          <Setter TargetName="PathIcon" Property="Fill" Value="Black" />-->
+                      </Trigger>
+                      <Trigger Property="IsPressed" Value="True">
+                          <Setter TargetName="bgPath" Property="Fill" Value="#006e6e" />
+                      </Trigger>
+                      <Trigger Property="IsEnabled" Value="False">
+                          <Setter TargetName="bgPath" Property="Fill" Value="Gray" />
+                      </Trigger>
+                  </ControlTemplate.Triggers>
+              </ControlTemplate>
+          </Setter.Value>
+      </Setter>
+  </Style>
 
   <Style x:Key="PlayButton" TargetType="Button">
       <Setter Property="OverridesDefaultStyle" Value="True"/>
