@@ -44,12 +44,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enum\KeyboardLayoutFlags.cs" />
+    <Compile Include="Enum\KeyEventFlags.cs" />
+    <Compile Include="Enum\MapVirtualKeymapTypes.cs" />
+    <Compile Include="Enum\WindowsMessages.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="KeyboardLayout.cs" />
     <Compile Include="KeyCode.cs" />
     <Compile Include="Mouse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Enum\RedrawWindowFlags.cs" />
+    <Compile Include="Enum\ShowWIndowCommands.cs" />
+    <Compile Include="Enum\SysCommands.cs" />
+    <Compile Include="SearchData.cs" />
+    <Compile Include="Struct\POINT.cs" />
+    <Compile Include="Struct\RECT.cs" />
     <Compile Include="Window.cs" />
+    <Compile Include="Window.Imports.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Keyboard.Imports.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

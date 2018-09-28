@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using ComputerVision;
 using InputSimulator;
 
@@ -24,6 +25,7 @@ namespace CommandProcessor
 	    {
 		    var cmd = Command.Parse(cmdStr);
 		    var executor = new Executor();
+		    working = true;
 		    Type thisType = executor.GetType();
 		    MethodInfo method = thisType.GetMethod(cmd.Name);
 		    if (method != null)
@@ -171,7 +173,7 @@ namespace CommandProcessor
 		    Process.Start(path, args1);
 	    }
 
-
+	    private static bool working = true;
 		/// <summary>
 		/// LocateSpecificText(this IntPtr wndHandle, string searchText, string lang = "en", int minHeight = 7, int maxHeight = 30, int minWidth = 40)
 		/// </summary>
@@ -219,8 +221,62 @@ namespace CommandProcessor
 		  
 	    }
 
+	    public void XpymepWaiting(object[] args)
+	    {
+		    var command     = Command.Parse((string)args[0]);
+		    var minThreads  = command.Attr.ContainsKey("MinThreads")  ? int.Parse(command.Attr["MinThreads"]) : 30;
+		    var interval    = command.Attr.ContainsKey("Interval")  ? decimal.Parse(command.Attr["Interval"], CultureInfo.InvariantCulture) : 1;
+		    var timeout     = TimeSpan.FromMinutes(command.Attr.ContainsKey("Timeout")  ? int.Parse(command.Attr["Timeout"]) : 180);
+		    var KillHim     = !command.Attr.ContainsKey("KillHim") || bool.Parse(command.Attr["KillHim"]);
+		    var threads = 0;
+		   
+		    Stopwatch t = new Stopwatch();
+		    t.Start();
+		    var process = Process.GetProcessesByName("xpymep").FirstOrDefault();
+		    do
+		    {
+			   
+			    if (process != null)
+			    {
+				    threads = process.Threads.Count;
+				    if (threads <= minThreads)
+					    break;
+				    Report?.Invoke(this, new ReportHandlerArgs($@"Threads={threads}/{minThreads},Time={t.Elapsed:hh\:mm\:ss}/{timeout:hh\:mm\:ss}"));
+			    }
+			    else
+			    {
+				    Report?.Invoke(this, new ReportHandlerArgs($"Process lost"));
+				    break;
+			    }
+				Thread.Sleep(TimeSpan.FromMilliseconds((int)(interval*1000m)));
+		    } 
+		    while (threads > minThreads && t.Elapsed < timeout && working);
+			t.Stop();
+		    if (KillHim && t.Elapsed >= timeout)
+		    {
+			    process?.Kill();
+		    }
+		    Report?.Invoke(this, new ReportHandlerArgs($""));
+	    }
 
+
+	    public static event ReportHandler Report;
+
+	    public static void StopAll()
+	    {
+		    working = false;
+	    }
     }
 
+	public delegate void ReportHandler(object sender, ReportHandlerArgs args);
 
+	public class ReportHandlerArgs
+	{
+		public string Message;
+
+		public ReportHandlerArgs(string msg = "")
+		{
+			Message = msg;
+		}
+	}
 }

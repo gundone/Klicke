@@ -11,23 +11,23 @@
         Closing="Window_Closing"
         Closed="Window_Closed">
     <Window.CommandBindings>
-        <CommandBinding Command="ApplicationCommands.Save" 
-                        Executed="QuickSave"/>
-        <CommandBinding Command="ApplicationCommands.SaveAs" 
-                        Executed="SaveAsMenuItem_OnClick"/>
-        <CommandBinding Command="ApplicationCommands.Open" 
-                        Executed="LoadMenuItem_OnClick"/>
+        <CommandBinding Command="ApplicationCommands.Save"
+                        Executed="QuickSave" />
+        <CommandBinding Command="ApplicationCommands.SaveAs"
+                        Executed="SaveAsMenuItem_OnClick" />
+        <CommandBinding Command="ApplicationCommands.Open"
+                        Executed="LoadMenuItem_OnClick" />
     </Window.CommandBindings>
     <Window.InputBindings>
-        <KeyBinding Key="S" 
-                    Modifiers="Control" 
-                    Command="ApplicationCommands.Save"/>
-        <KeyBinding Key="S" 
-                    Modifiers="Control+Shift" 
-                    Command="ApplicationCommands.SaveAs"/>
-        <KeyBinding Key="O" 
-                    Modifiers="Control" 
-                    Command="ApplicationCommands.Open"/>
+        <KeyBinding Key="S"
+                    Modifiers="Control"
+                    Command="ApplicationCommands.Save" />
+        <KeyBinding Key="S"
+                    Modifiers="Control+Shift"
+                    Command="ApplicationCommands.SaveAs" />
+        <KeyBinding Key="O"
+                    Modifiers="Control"
+                    Command="ApplicationCommands.Open" />
     </Window.InputBindings>
     <Grid Background="{DynamicResource ResourceKey=Brush05}">
         <Grid.ColumnDefinitions>
@@ -40,13 +40,13 @@
             <MenuItem Header="File">
                 <MenuItem x:Name="SaveMenuItem"
                           Header="_Save"
-                          Command="ApplicationCommands.Save" 
+                          Command="ApplicationCommands.Save"
                           InputGestureText="Ctrl+S"
                           Padding="6"
                           SnapsToDevicePixels="True"></MenuItem>
                 <MenuItem x:Name="SaveAsMenuItem"
                           Header="Save as"
-                          Command="ApplicationCommands.SaveAs" 
+                          Command="ApplicationCommands.SaveAs"
                           InputGestureText="Ctrl+Shift+S"
                           Padding="6"
                           SnapsToDevicePixels="True">
@@ -106,15 +106,21 @@
                      HorizontalScrollBarVisibility="Auto"
                      FocusManager.IsFocusScope="True"
                      TextChanged="ActionListBox_TextChanged"
-                     PreviewMouseUp="ActionTextBox_OnMouseUp"/>
+                     AcceptsReturn="True"
+                     PreviewMouseUp="ActionTextBox_OnMouseUp" />
             <ListBox x:Name="ActionList"
                      Margin="10,45,10,10"
-                     
                      FocusManager.IsFocusScope="True"
                      IsSynchronizedWithCurrentItem="True"
                      klicke:ScrollCurrentItemIntoViewBehavior.AutoScrollToCurrentItem="True"
                      SelectionMode="Single"
-                     Visibility="Hidden"/>
+                     Visibility="Hidden" />
+            <TextBox x:Name="ExecutorMessage"
+                     Margin="180,10,10,0"
+                     Height="30"
+                     Visibility="Hidden"
+                     IsEnabled="False"
+                     VerticalAlignment="Top"></TextBox>
         </Grid>
     </Grid>
 </Window>

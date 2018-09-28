@@ -16,6 +16,7 @@ using System.Windows.Forms;
 using CommandProcessor;
 using HookManagerNS;
 using InputSimulator;
+using InputSimulator.Struct;
 using KeyInterceptorNS;
 using Cursor = System.Windows.Input.Cursor;
 using KeyEventArgs = System.Windows.Forms.KeyEventArgs;
@@ -200,42 +201,35 @@ namespace Klicke
 				_wndBound = null;
 			}
 			Parent.AddAction(action);
+			_lastWnd.RefreshWindow();
 			HookManager.MouseMove -= WindowSearch;
 			HookManager.ClearAll();
 			KeyInterceptor.ClearAll();
 		}
 
-		private void WindowSearchStartStop(object sender, KeyEventArgs e)
-		{
-			if (e.KeyData == Keys.F2)
-			{
-				HookManager.MouseMove += WindowSearch;
-				HookManager.MouseDown += WindowActionSelect;
-			}
-			else if (e.KeyData == Keys.F3)
-			{
-				HookManager.ClearAll();
-				KeyInterceptor.ClearAll();
-			}
-		}
-
+		IntPtr _lastWnd = IntPtr.Zero;
 		private void WindowSearch(object sender, MouseEventArgs e)
 		{
-			var hWnd = Window.WindowFromPoint(new Window.POINT(e.X, e.Y));
+			_lastWnd.RefreshWindow();
+			var hWnd = Window.WindowFromPoint(e.X, e.Y);
+			hWnd.RefreshWindow();
 			StringBuilder ClassName = new StringBuilder(256);
 			StringBuilder Title = new StringBuilder(256);
 			//Get the window class name
 			var nRet = Window.GetClassName(hWnd, ClassName, ClassName.Capacity);
-			var nx   = Window.GetWindowText(hWnd, Title, Title.Capacity);
+			var nx   = hWnd.GetWindowText();
 			if(nRet != 0)
 			{
+				hWnd.HighlightClientFrame();
 				TextBoxWndClass.Text = ClassName.ToString();
+				
 			}
 
-			if (nx != 0)
+			if (nx.Length != 0)
 			{
 				TextBoxWndTitle.Text = Title.ToString();
 			}
+			_lastWnd = hWnd;
 		}
 
 		private void TabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

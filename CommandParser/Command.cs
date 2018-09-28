@@ -26,7 +26,7 @@ namespace CommandProcessor
 
 		public static Command Parse(string input)
 		{
-			var regName = new Regex(@"^[^:\n]*(?=:.*$)");
+			var regName = new Regex(@"^[^:\s]+(?=:.*$)*");
 			var name = regName.Match(input).Value;
 			var regParam = new Regex(@"\w+=[^;]+");
 

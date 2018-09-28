@@ -171,12 +171,15 @@
                               HorizontalAlignment="Left"
                               Width="147"
                               VerticalAlignment="Top" />
-                    <Button Margin="10,250,0,142"
+                    <Button Height="30"
                             Content="Start"
                             HorizontalAlignment="Left"
                             Width="100"
                             Name="StartWndSearching"
-                            PreviewMouseDown="StartWndSearching_OnClick" />
+                            PreviewMouseDown="StartWndSearching_OnClick"
+                            Margin="12,0,0,139"
+                            VerticalAlignment="Bottom"
+                            d:LayoutOverrides="Height" />
 
                 </Grid>
             </TabItem>

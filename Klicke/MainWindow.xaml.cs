@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +16,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using CommandProcessor;
 using Application = System.Windows.Application;
+using InputSimulator;
+using Window = System.Windows.Window;
+
 //using DialogResult =  System.Windows.Forms.DialogResult;
 
 namespace Klicke
@@ -44,7 +50,9 @@ namespace Klicke
 		public MainWindow()
 		{
 			InitializeComponent();
-			Save.InputGestures.Add( new KeyGesture( Key.S , ModifierKeys.Control ));
+			Save.InputGestures.Add( new KeyGesture(Key.S , ModifierKeys.Control ));
+			SaveAs.InputGestures.Add( new KeyGesture(Key.S , ModifierKeys.Control | ModifierKeys.Shift ));
+			Open.InputGestures.Add( new KeyGesture(Key.O, ModifierKeys.Control));
 			//ActionTextBox.Document.PageWidth = 1000;
 			if (Properties.Settings.Default.OpenLastScript 
 			    && File.Exists(Properties.Settings.Default.LastOpenedScript))
@@ -117,6 +125,11 @@ namespace Klicke
 					.OfType<AddItemWindow>()
 					.First(w => w.Name.Equals("AddAction"))
 					.Close();
+
+			}
+
+			if (IsWindowOpen<AddItemWindow>("Options"))
+			{
 				Application
 					.Current
 					.Windows
@@ -315,7 +328,14 @@ namespace Klicke
 			int i = 0;
 			_tokenSource2 = new CancellationTokenSource();
 			CancellationToken ct =  _tokenSource2.Token;
-
+			Executor.Report += (s, args) =>
+			{
+				Dispatcher.Invoke(() =>
+				{
+					ExecutorMessage.Visibility = string.IsNullOrWhiteSpace(args.Message) ? Visibility.Hidden : Visibility.Visible;
+					ExecutorMessage.Text = args.Message;
+				});
+			}; 
 			var t = Task.Run(() =>
 			{
 				try
@@ -365,7 +385,14 @@ namespace Klicke
 			int i = 0;
 			_tokenSource2 = new CancellationTokenSource();
 			CancellationToken ct =  _tokenSource2.Token;
-
+			Executor.Report += (s, args) =>
+			{
+				Dispatcher.Invoke(() =>
+				{
+					ExecutorMessage.Visibility = string.IsNullOrWhiteSpace(args.Message) ? Visibility.Hidden : Visibility.Visible;
+					ExecutorMessage.Text = args.Message;
+				});
+			}; 
 			var t = Task.Run(() =>
 			{
 				try
@@ -434,10 +461,12 @@ namespace Klicke
 
 		private void StopButtonClick(object sender, RoutedEventArgs e)
 		{
+			Executor.StopAll();
 			_tokenSource2.Cancel();
 			ActionList.Visibility = Visibility.Hidden;
 			ActionTextBox.Visibility = Visibility.Visible;
 			ActionTextBox.IsEnabled = true;
+			
 		}
 
 		private void ActionTextBox_OnMouseUp(object sender, MouseButtonEventArgs e)
@@ -449,6 +478,18 @@ namespace Klicke
 		private void SaveMenuItem_OnClick(object sender, RoutedEventArgs e)
 		{
 			Save.Execute(this, null);
+		}
+
+		private void Button_OnClick(object sender, RoutedEventArgs e)
+		{
+			var xpymep = InputSimulator.Window.FindWindow("Notepad", null);
+			var process = Process.GetProcessesByName("xpymep").FirstOrDefault();
+			if (process != null)
+			{
+				var threads = process.Threads;
+				ActionTextBox.Text = threads.Count.ToString();
+			}
+			
 		}
 	}
 }
