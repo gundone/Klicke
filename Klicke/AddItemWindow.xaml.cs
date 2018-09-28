@@ -185,15 +185,15 @@ namespace Klicke
 		private void WindowActionSelect(object sender, MouseEventArgs e)
 		{
 
-			var action = $"WaitForWindow: WndClass={textBoxWndClass.Text};" +
-			             $"WndTitle={textBoxWndTitle.Text};" +
+			var action = $"WaitForWindow: WndClass={TextBoxWndClass.Text};" +
+			             $"WndTitle={TextBoxWndTitle.Text};" +
 			             $"Maximize={MaximizeWndCheckBox.IsChecked};" +
 			             $"Close={CloseWndCheckBox.IsChecked};" +
 			             $"Bind={BindWindow.IsChecked};" +
 			             $"Unbind={UnbindWindow.IsChecked}";
 			if (BindWindow.IsChecked ?? false)
 			{
-				_wndBound = new Tuple<string, string>(textBoxWndClass.Text, textBoxWndTitle.Text);
+				_wndBound = new Tuple<string, string>(TextBoxWndClass.Text, TextBoxWndTitle.Text);
 			}
 			if (UnbindWindow.IsChecked ?? false)
 			{
@@ -229,12 +229,12 @@ namespace Klicke
 			var nx   = Window.GetWindowText(hWnd, Title, Title.Capacity);
 			if(nRet != 0)
 			{
-				textBoxWndClass.Text = ClassName.ToString();
+				TextBoxWndClass.Text = ClassName.ToString();
 			}
 
 			if (nx != 0)
 			{
-				textBoxWndTitle.Text = Title.ToString();
+				TextBoxWndTitle.Text = Title.ToString();
 			}
 		}
 
@@ -347,6 +347,24 @@ namespace Klicke
 		{
 			HookManager.MouseMove += WindowSearch;
 			HookManager.MouseUp   += WindowActionSelect;
+		}
+
+		private void ScriptPath_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{
+			OpenFileDialog od = new OpenFileDialog
+			{
+				Filter = @"(*.log)|*.log|(All Files *.*)|*.*"
+			};
+			if (od.ShowDialog() == System.Windows.Forms.DialogResult.OK && od.CheckFileExists)
+			{
+				ScriptPath.Text = od.FileName;
+			}
+		}
+
+		private void OpenScriptAddAction(object sender, RoutedEventArgs e)
+		{
+			var action = $"Execute: Script={ScriptPath.Text}";
+			Parent.AddAction(action);
 		}
 	}
 }

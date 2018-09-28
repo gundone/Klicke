@@ -127,19 +127,20 @@
                     <Label Content="WaitForWindow"
                            Height="35"
                            VerticalAlignment="Top" />
-                    <TextBox x:Name="textBoxWndClass"
+                    <TextBox x:Name="TextBoxWndClass"
+                             Style="{StaticResource PlaceHolder}"
                              Height="23"
                              Margin="10,40,10,0"
                              TextWrapping="Wrap"
-                             Text="wndClass"
+                             Tag="wndClass"
                              VerticalAlignment="Top" />
-                    <TextBox x:Name="textBoxWndTitle"
+                    <TextBox x:Name="TextBoxWndTitle"
+                             Style="{StaticResource PlaceHolder}"
                              Height="23"
                              Margin="10,75,10,0"
                              TextWrapping="Wrap"
-                             Text="wndTitle"
-                             VerticalAlignment="Top"
-                             d:LayoutOverrides="Width, LeftMargin, RightMargin" />
+                             Tag="wndTitle"
+                             VerticalAlignment="Top"/>
                     <CheckBox Content="Maximize"
                               x:Name="MaximizeWndCheckBox"
                               Margin="10,130,0,0"
@@ -158,6 +159,7 @@
                               x:Name="BindWindow"
                               Margin="10,190,0,0"
                               Height="22"
+                              IsChecked="True"
                               HorizontalAlignment="Left"
                               Width="147"
                               VerticalAlignment="Top"
@@ -174,7 +176,7 @@
                             HorizontalAlignment="Left"
                             Width="100"
                             Name="StartWndSearching"
-                            PreviewMouseDown="StartWndSearching_OnClick"/>
+                            PreviewMouseDown="StartWndSearching_OnClick" />
 
                 </Grid>
             </TabItem>
@@ -304,6 +306,29 @@
                             VerticalAlignment="Top"
                             Click="SleepAddAction"
                             d:LayoutOverrides="VerticalAlignment" />
+                </Grid>
+
+            </TabItem>
+            <TabItem Header="Run script"
+                     x:Name="RunScriptTab">
+                <Grid Background="{DynamicResource ResourceKey=Brush05}">
+                    <Label Content="Select file:" />
+                    <TextBox x:Name="ScriptPath"
+                             TextWrapping="Wrap"
+                             Text=""
+                             Margin="10,30,10,0"
+                             Height="32"
+                             VerticalAlignment="Top"
+                             TextAlignment="Right"
+                             MouseDoubleClick="ScriptPath_OnMouseDoubleClick" />
+
+                    <Button Content="Ok"
+                            Width="100"
+                            Height="22"
+                            Margin="10,67,0,0"
+                            VerticalAlignment="Top"
+                            Click="OpenScriptAddAction"
+                            HorizontalAlignment="Left" />
                 </Grid>
 
             </TabItem>

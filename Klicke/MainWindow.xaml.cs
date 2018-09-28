@@ -36,7 +36,7 @@ namespace Klicke
 		private void QuickSave(object sender, ExecutedRoutedEventArgs e)
 		{
 			var fileName = Properties.Settings.Default.LastOpenedScript;
-			File.WriteAllText(fileName, new TextRange(ActionTextBox.Document.ContentStart, ActionTextBox.Document.ContentEnd).Text);
+			File.WriteAllText(fileName, ActionTextBox.Text);
 			Properties.Settings.Default.LastOpenedScript = fileName;
 			Properties.Settings.Default.Save();
 		}
@@ -45,12 +45,13 @@ namespace Klicke
 		{
 			InitializeComponent();
 			Save.InputGestures.Add( new KeyGesture( Key.S , ModifierKeys.Control ));
-			ActionTextBox.Document.PageWidth = 1000;
+			//ActionTextBox.Document.PageWidth = 1000;
 			if (Properties.Settings.Default.OpenLastScript 
 			    && File.Exists(Properties.Settings.Default.LastOpenedScript))
 			{
-				ActionTextBox.Document.Blocks.Clear();
-				ActionTextBox.Document.Blocks.Add(new Paragraph(new Run( string.Join("\r\n", File.ReadAllLines(Properties.Settings.Default.LastOpenedScript)))));
+				//ActionTextBox.Document.Blocks.Clear();
+				//ActionTextBox.Document.Blocks.Add(new Paragraph(new Run( string.Join("\r\n", File.ReadAllLines(Properties.Settings.Default.LastOpenedScript)))));
+				ActionTextBox.Text = File.ReadAllText(Properties.Settings.Default.LastOpenedScript);
 				Title = "Klicke - " + Properties.Settings.Default.LastOpenedScript;
 			}
 		}
@@ -231,8 +232,9 @@ namespace Klicke
 		private int _runs = 0;
 		private void ActionListBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			if (ActionTextBox.Document == null)
-				return;
+			//if (ActionTextBox.Document == null)
+			//	return;
+			
 			//ActionTextBox.TextChanged -= ActionListBox_TextChanged;
 			
 			//m_tags.Clear();
@@ -353,7 +355,7 @@ namespace Klicke
 			ActionList.Items.Clear();
 
 
-			var linesToRun = Regex.Split(ActionTextBox.Selection.Text, "\r\n|\n");
+			var linesToRun = Regex.Split(ActionTextBox.SelectedText, "\r\n|\n");
 			foreach (var s in linesToRun)
 			{
 				ListBoxItem itm = new ListBoxItem {Content = s};
@@ -407,7 +409,7 @@ namespace Klicke
 			};
 			if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 			{
-				File.WriteAllText(sd.FileName, new TextRange(ActionTextBox.Document.ContentStart, ActionTextBox.Document.ContentEnd).Text);
+				File.WriteAllText(sd.FileName, ActionTextBox.Text);
 				Properties.Settings.Default.LastOpenedScript = sd.FileName;
 				Properties.Settings.Default.Save();
 				Title = "Klicke - " + sd.FileName;
@@ -440,7 +442,7 @@ namespace Klicke
 
 		private void ActionTextBox_OnMouseUp(object sender, MouseButtonEventArgs e)
 		{
-			StepButton.IsEnabled = !ActionTextBox.Selection.IsEmpty;
+			StepButton.IsEnabled = !string.IsNullOrWhiteSpace(ActionTextBox.SelectedText);
 		}
 
 

@@ -212,6 +212,13 @@ namespace CommandProcessor
 			Keyboard.KeyUp(Keys.LMenu);
 		}
 
+	    public void Execute(object[] args)
+	    {
+		    var command   = Command.Parse((string)args[0]);
+		    var lang      = command.Attr["Script"];
+		  
+	    }
+
 
     }
 
